@@ -1,0 +1,95 @@
+<!DOCTYPE HTML>
+<!--
+	Photon by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Cole Davidson | GPU Raytracer</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+	</head>
+	<body class="is-preload">
+
+		<div class="inner navContainer">
+			<ul class="navbar">
+				<li class="navItem"><a href="index.html">Home</a></li>
+				<li class="navItem"><a href="index.html#projects">Projects</a></li>
+			</ul>
+		</div>
+
+		<!-- Header -->
+			<section id="header">
+				<div class="inner">
+					<h1>Cole Davidson</h1>
+				</div>
+			</section>
+
+			<section id="three" class="main style1">
+				<div class="container">
+					<header class="major special">
+						<h2>GPU Raytacer</h2>
+					</header>
+					<p>This raytracer was originally an assignment for the course <i>Fundamentals of Computer Graphics</i>, however I decided to port it to the GPU as a personal project. The goal was to familiarize myself with compute shaders and GPU memory layout.</p>
+				</div>
+				<div class="container">
+					<header class="major special">
+						<h2>Features</h2>
+					</header>
+                    <p>Whenever a ray hits an object, it creates 3 new rays. These 3 rays each check for a different property when coloring an object.</p>
+					<h3>Shadows</h3>
+					<p>Shadow rays travel from an object's surface towards the light sources in a scene. If these rays hit another object on their way to a light source, then the object is placed in shadow.</p>
+					<span class="image fit"><img src="images/GPURaytracer_4.png" alt="" /></span>
+					<h3>Reflections</h3>
+					<p>Shiny surfaces bounce light rays back into the scene. These rays may then hit other objects in the scene to create reflections. </p>
+					<span class="image fit"><img src="images/GPURaytracer_1.png" alt="" /></span>
+					<h3>Refractions</h3>
+					<p>Transparent surfaces bend light rays as they pass through objects. These rays may then hit other objects in the scene to create a distorted refraction.</p>
+					<span class="image fit"><img src="images/GPURaytracer_2.png" alt="" /></span>
+				</div>
+                <div class="container">
+                    <header class = "major special">
+                        <h2>Performance</h2>						
+                    </header>
+					<p>Porting this ray tracer an OpenGL compute shader made it incredibly fast. It is capable of rendering scenes at 1080 x 720 pixels in real time.</p>
+					<iframe width="1080" height="720" 
+					src="https://www.youtube.com/embed/DHhq6ENzpZI">
+					</iframe>
+                </div>
+				<div class="container">
+					<header class="major special">
+						<h2>Code</h2>
+					</header>
+					<p>The source code for this project can be found <a href="https://github.com/cadavidson98/GPU-RayTracer">here</a>. This project was written entirely in C++ and OpenGL, and includes CMake build support.</p>
+				</div>
+				<div class="container">
+					<header class="major special">
+						<h2>Credits</h2>
+					</header>
+					<p>The scenes and models shown were created by Dr. Stephen Guy and Moses Adeagbo.</p>
+				</div>
+
+			</section>
+
+			<!-- Footer -->
+			<section id="footer">
+				<ul class="icons">
+					<li><a href="www.linkedin.com/in/cole-davidson-163a97186" class="icon brands alt fa-linkedin"><span class="label">LinkedIn</span></a></li>
+					<li><a href="https://github.com/cadavidson98" class="icon brands alt fa-github"><span class="label">GitHub</span></a></li>
+					<li><a href="mailto:cadavidson98@gmail.com" class="icon solid alt fa-envelope"><span class="label">Email</span></a></li>
+				</ul>
+			</section>
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/jquery.scrolly.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+
+	</body>
+</html>

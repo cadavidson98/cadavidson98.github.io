@@ -60,6 +60,13 @@ mark {
 	color: inherit;
 }
 
+iframe {
+	margin-left : auto;
+	margin-right: auto;
+	display: block;
+	text-align: center;
+}
+
 input::-moz-focus-inner {
 	border: 0;
 	padding: 0;
@@ -2058,6 +2065,26 @@ input, select, textarea {
 		text-align: center;
 	}
 
+/* Navbar */
+	.navContainer {
+		position: absolute;
+		left: 0;
+		top : 0;
+		z-index: 100;
+	}
+	.navbar {
+		list-style-type: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	.navItem {
+		float: left;
+		display: block;
+		color: white;
+		text-align: center;
+		text-decoration: none;
+	}
 /* Form */
 
 	form {
