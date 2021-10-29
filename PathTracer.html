@@ -1,0 +1,107 @@
+<!DOCTYPE HTML>
+<!--
+	Photon by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Cole Davidson | Pathtracer</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+	</head>
+	<body class="is-preload">
+
+		<div class="inner navContainer">
+			<ul class="navbar">
+				<li class="navItem"><a href="index.html">Home</a></li>
+				<li class="navItem"><a href="index.html#projects">Projects</a></li>
+			</ul>
+		</div>
+
+		<!-- Header -->
+			<section id="header">
+				<div class="inner">
+					<h1>Cole Davidson</h1>
+				</div>
+			</section>
+
+			<section id="three" class="main style1">
+				<div class="container">
+					<header class="major special">
+						<h2>Pathtacer</h2>
+					</header>
+					<p>This pathtracer was a final project for the course <i>Fundamentals of Computer Graphics</i>. I partnered with another student, Hailin Archer, to upgrade our raytracer from a previous assignment into a pathtracer for more photo-realistic rendering.</p>
+				</div>
+				<div class="container">
+					<header class="major special">
+						<h2>Features</h2>
+					</header>
+                    <p>Compared to our initial raytracers, this pathtracer added several enhanced rendering features. These features all stemmed from the integrating the light-transport equation in favor of using traditional local illumination models, such as Phong-Blinn.</p>
+					<h3>Soft Shadows & Ambient Occulusion</h3>
+					<p>Instead of a harsh difference between light and shadow, shadows now have blurrier, softer edges. This is because shadowed areas now receive indirect lighting.</p>
+					<div class="container">
+						<div class="row gtr-150">
+                        	<div class="col-6">
+                            	<span class="image fit"><img src="images/PathTracer_compare.png" alt="" /></span>
+								<p style="text-align: center">Raytracing the Stanford bunny. Shadows are very sharp.</p>
+                        	</div>
+                        	<div class="col-6">
+                            	<span class="image fit"><img src="images/PathTracer_bunny.png" alt="" /></span>
+								<p style="text-align: center">Pathtracing the Stanford bunny. Shadows are much softer.</p>
+                        	</div>
+                    	</div>
+					</div>
+					<p>On a global scale, this behavior also simulates Ambient Occulusion.</p>
+					<img class="ColeImage" src="images/PathTracer_5.png" alt="" />
+					<h3>Color Bleed</h3>
+					<p>When light rays travel through the scene, they tend to accumulate the color of any surfaces they touch. This effect is called color bleeding and is noticeable when 2 objects are nearby.</p>
+					<img class="ColeImage" src="images/PathTracer_2.png" alt="" />
+                    <h3>Caustics</h3>
+					<p>When light passes through refractive materials, such as glass or water, the light bends and focuses onto a particular point.</p>
+					<div class="container">
+						<div class="row gtr-150">
+                        	<div class="col-6">
+                            	<span class="image fit"><img src="images/PathTracer_1.png" alt="" /></span>
+                        	</div>
+                        	<div class="col-6">
+                            	<span class="image fit"><img src="images/PathTracer_6.png" alt="" /></span>
+                        	</div>
+                    	</div>
+					</div>
+				</div>
+				<div class="container">
+					<header class="major special">
+						<h2>Code</h2>
+					</header>
+					<p>The source code for this project can be found <a href="https://github.com/CyberHolmes/CSCI5607/tree/main/FinalProject/CPU_PathTracer">here</a>. This project was developed in Hailin's existing raytracer from a previous course project, so I cannot take credit for the core design; I only co-developed the pathtracing functionality. To see my ray tracer, please refer to <a href="GPURaytracer.html">my GPU Raytracer</a>.</p>
+				</div>
+				<div class="container">
+					<header class="major special">
+						<h2>Credits</h2>
+					</header>
+				</div>
+
+			</section>
+
+			<!-- Footer -->
+			<section id="footer">
+				<ul class="icons">
+					<li><a href="www.linkedin.com/in/cole-davidson-163a97186" class="icon brands alt fa-linkedin"><span class="label">LinkedIn</span></a></li>
+					<li><a href="https://github.com/cadavidson98" class="icon brands alt fa-github"><span class="label">GitHub</span></a></li>
+					<li><a href="mailto:cadavidson98@gmail.com" class="icon solid alt fa-envelope"><span class="label">Email</span></a></li>
+				</ul>
+			</section>
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/jquery.scrolly.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+
+	</body>
+</html>
