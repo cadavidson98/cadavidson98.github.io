@@ -1,0 +1,159 @@
+<!DOCTYPE HTML>
+<!--
+	Photon by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Cole Davidson | Sparse Image</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+	</head>
+	<body class="is-preload">
+
+		<div class="inner navContainer">
+			<ul class="navbar">
+				<li class="navItem"><a href="index.html">Home</a></li>
+				<li class="navItem"><a href="index.html#projects">Projects</a></li>
+			</ul>
+		</div>
+
+		<!-- Header -->
+			<section id="header">
+				<div class="inner">
+					<h1>Cole Davidson</h1>
+				</div>
+			</section>
+			<section id="three" class="main style1">
+				<div class="container">
+					<header class="major special">
+						<h2>Sparse Image Processing</h2>
+					</header>
+					<p>One of my favorite aspects of Computer Graphics is how large the field is. Topics like rendering, rasterization, and HCI are all very closely related to "classical" computer graphics, but more often than not, I have found it is quite simple to link Computer Graphics topics to my various courses in University. This project is no exception, these implementations of advanced image processing techniques were my final project for the course <i>Sparse Matrix Computations</i>.</p>
+				</div>
+				<div class="container">
+					<header class="major special">
+						<h3>Poisson Image Editing</h3>
+					</header>
+                    <p>Image compositing is the process of combining 2 pictures to create a new picture. Informally, image compositing can be thought of as "copying" a source image, S, and "pasting" it into target image T. In the naive image compositing algorithm, the pixel colors values from S are inserted into T directly. The results of this technique are shown below.</p>
+					<div class="container">
+						<div class="row gtr-150">
+                        	<div class="col-4">
+                            	<span class="image fit"><img src="images/dog.png" alt="" /></span>
+								<p>Source image of a dog.</p>
+                        	</div>
+                        	<div class="col-4">
+                            	<span class="image fit"><img src="images/room_color_temps.jpg" alt="" /></span>
+								<p>Target image of a room with yellow lighting.</p>
+                        	</div>
+                            <div class="col-4">
+                                <span class="image fit"><img src="images/dog_colors_temp.jpg" alt="" /></span>
+                                <p>Result of compositing the dog into the room using naive image compositing.</p>
+                            </div>
+                    	</div>
+					</div>
+					<p>While fast and intuitive, this method has 2 limitations. It often produces visible seams between around the inserted region and the image lighting & coloring often mismatch. These shortcomings are largely due to the representations of images. A pixel is a collection of colors at a discrete location in a picture. Raw color data doesn't indicate an element's shape or features, such as whether a pixel is part of the dog's ear, fur, eyes, or tail. In <i>Poisson image editing</i>, Perez et al. developed Poisson image blending in an attempt to address these shortcomings.</p>
+                    <h4>Implementation</h4>
+					<p>The main insight with drives Poisson image blending is that, given the gradient of an image and the pixel colors along the image boundary, all the original pixel colors can be recovered. This insight is a direct consequence of the finite differences equation. Using the finite differences equation to approximate the gradient between two pixels, p and q yields the equation:</p>
+                    <img src="images/Finite Differences.png" alt="" class="ColeImage"/>
+					<p>Instead of considering a pair of pixels, we can now consider how the gradient propagates color between <i>all</i> adjacent pixels. Let N<sub>p</sub> represent the set of pixels adjacent to pixel p. Then combining the finite differences equations for all pixels in N<sub>p</sub> yields the equation:
+						Which, when rearranged, reveals the sparse system of linear equations to obtain the color for every pixel in an image:
+					</p>
+					<img src="images/Discrete Poisson.png" alt="" class="ColeImage"/>
+					<p>These equations are exactly the formulation for the discrete Poisson equation with Dirichlet boundary conditions, hence why the technique is called Poisson Image Editing. In reality, since the goal is to composite 2 images together, we take the boundary conditions from the target image, T, instead of using the boundaries from the source image. The results are shown below:</p>
+					<div class="container">
+						<div class="row gtr-150">
+                        	<div class="col-6">
+                            	<span class="image fit"><img src="images/dog_colors_temp.jpg" alt="" /></span>
+								<p>Naive image compositing. There is a noticeable white seam between the dog and room.</p>
+                        	</div>
+                            <div class="col-6">
+                                <span class="image fit"><img src="images/dog_color_temps.jpg" alt="" /></span>
+                                <p>Image composition via Poisson image blending. The seam is now gone & the dog's fur has become darker and yellower to match the environment.</p>
+                            </div>
+                    	</div>
+					</div>
+					<h4>Mixed Image Blending</h4>
+					<p>A notable limitation of seamless image blending is how the method handles images with holes. Colors are propagated through the empty regions and create prominent blobs. To address this deficit, Perez proposed a piecewise gradient operator expressed as:
+						This gradient is a piecewise combination of the source image S and target image T gradients at each pixel in the reconstruction region. It preserves details in the target image by selecting the dominant gradient of both images. As a result, any mundane details, such as white spaces between letters, are discarded during image blending.
+					</p>
+					<div class="container">
+						<div class="row gtr-150">
+                        	<div class="col-4">
+                            	<span class="image fit"><img src="images/graffiti_naive.png" alt="" /></span>
+								<p>Naive image compositing. The brick texture underneath the graffiti is lost.</p>
+                        	</div>
+                            <div class="col-4">
+                                <span class="image fit"><img src="images/graffiti_poisson.png" alt="" /></span>
+                                <p>Poisson Image Blending. The brick texture underneath the graffiti is lost underneath the graffiti and between the letters.</p>
+                            </div>
+							<div class="col-4">
+								<span class="image fit"><img src="images/graffiti_mixed.png" alt="" /></span>
+								<p>Mixed Image Blending. The brick texture is preserved.</p>
+							</div>
+                    	</div>
+					</div>
+					<header class="major special">
+						<h3>Image Colorization Using Optimization</h3>
+					</header>
+					<p>While researching Poisson Image editing, I stumbled across a fascinating paper, <i>Colorization Using Optimization</i> by Levin et al. The methods proposed in this paper aimed to provide an artistically-friendly method for recoloring grayscale images. All an artist needs to do is scribble on each item in the picture, then the colors are propogated automatically throughout the image.</p>
+					<div class="container">
+						<div class="row gtr-150">
+                        	<div class="col-6">
+                            	<span class="image fit"><img src="images/apples_guide.bmp" alt="" /></span>
+								<p>A grayscale image of 2 apples marked with a few colors.</p>
+                        	</div>
+                            <div class="col-6">
+                                <span class="image fit"><img src="images/apples_colored_3.png" alt="" /></span>
+                                <p>The same image recolored using the scribbles provided in the figure to the left.</p>
+                            </div>
+                    	</div>
+					</div>
+					<h4>Implementation</h4>
+					<p>The process of recoloring an image can be reframed as a data interpolation problem. Levin et al. make the observation that, in a grayscale image, neighboring pixels with similar brightness values often represent the same object, and thus should have the same color. Therefore, it is possible to utilize a weighted graph to propogate colors. For pixels p and q, the weight of edge {p,q} is given by:</p>
+					<img src="images/Image Weight.png" alt="" class="ColeImage"/>
+					<p>Propogating colors can be expressed as a quadratic optimization problem, which aims to minimize the difference in the colors of neighboring pixels:</p>
+					<img src="images/opt problem.png" alt="" class="ColeImage"/>
+					<p>Where S is the recolored image, C is the artist defined colors, and &delta;C is the set of all colored pixels in the original grayscale image. Quadratic Optimization Problems can be reformulated as a sparse linear system of equations. The solution to the linear system is a vector which encodes the new color at each pixel in the image. The results speak for themselves:</p>
+					<div class="container">
+						<div class="row gtr-150">
+                        	<div class="col-6">
+                            	<span class="image fit"><img src="images/lucy_guide.bmp" alt="" /></span>
+								<p>A grayscale image of 2 apples marked with a few colors.</p>
+                        	</div>
+                            <div class="col-6">
+                                <span class="image fit"><img src="images/lucy_colored.png" alt="" /></span>
+                                <p>The same image recolored using the scribbles provided in the figure to the left.</p>
+                            </div>
+                    	</div>
+					</div>
+					<div class="container">
+						<header class="major special">
+							<h3>References</h3>
+						</header>
+						<p>[1]	Patrick Pérez, Michel Gangnet, and Andrew Blake. 2003. Poisson image editing. In ACM SIGGRAPH 2003 Papers (SIGGRAPH '03). Association for Computing Machinery, New York, NY, USA, 313–318. https://doi.org/10.1145/1201775.882269 Ding, W. and Marchionini, G. 1997. A Study on Video Browsing Strategies. Technical Report. University of Maryland at College Park. </p>
+						<p>[2]	Anat Levin, Dani Lischinski, and Yair Weiss. 2004. Colorization using optimization. In ACM SIGGRAPH 2004 Papers (SIGGRAPH '04). Association for Computing Machinery, New York, NY, USA, 689–694. https://doi.org/10.1145/1186562.1015780.</p>
+					</div>
+				</section>
+			<!-- Footer -->
+			<section id="footer">
+				<ul class="icons">
+					<li><a href="www.linkedin.com/in/cole-davidson-163a97186" class="icon brands alt fa-linkedin"><span class="label">LinkedIn</span></a></li>
+					<li><a href="https://github.com/cadavidson98" class="icon brands alt fa-github"><span class="label">GitHub</span></a></li>
+					<li><a href="mailto:cadavidson98@gmail.com" class="icon solid alt fa-envelope"><span class="label">Email</span></a></li>
+				</ul>
+			</section>
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/jquery.scrolly.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+
+	</body>
+</html>
