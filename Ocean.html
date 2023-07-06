@@ -1,0 +1,137 @@
+<!DOCTYPE HTML>
+<!--
+	Photon by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Cole Davidson | Ocean Simulation</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+	</head>
+	<body class="is-preload">
+
+		<div class="inner navContainer">
+			<ul class="navbar">
+				<li class="navItem"><a href="index.html">Home</a></li>
+				<li class="navItem"><a href="index.html#projects">Projects</a></li>
+			</ul>
+		</div>
+
+		<!-- Header -->
+			<section id="header">
+				<div class="inner">
+					<h1>Cole Davidson</h1>
+				</div>
+			</section>
+			<section id="three" class="main style1">
+				<div class="container">
+					<header class="major special">
+						<h2>Ocean Simulation</h2>
+					</header>
+					<p>In addition to studying computer graphics & rendering, I really enjoy simulating water. I have simulated small bodies of water using Eularian and Langragian simulations, but I decided to aim for something much larger as a final project in the course <i>Applied Parallel Programming</i>. The result is a massively parallel ocean simulation using CUDA and OpenGL.</p>
+				</div>
+				<div class="container">
+					<header class="major special">
+						<h2>Overview</h2>
+					</header>
+					<p>The ocean simulation implemented in this project was first introduced by Tessendorf in [1] and has been used in major films such as <i>The Titanic ([1])</i> and <i>Moana ([3])</i>. At a glance, the simulation models ocean waves by representing a large body of water as a 2W x 2H grid of sinusoidal wave functions, each which describes the ocean amplitude at a grid cell. At each simulation timestep, the wave functions disperse energy (i.e water) between the grid points, then uses a 2D Inverse Fourier Transform to convert the ocean grid into a heightmap which describes the ocean wave height at each grid cell.</p>
+					<p>The simulation has 3 main phases:</p>
+					<div class="contain">
+						<div class="row gtr-150">
+                        	<div class="col-4 col-12-medium">
+                            	<span class = "image"><img src="images/spectrum_init.png" alt="" class="ColeImage"/></span>
+								<p class = "special">Generate Initial Ocean Spectrum</p>
+                        	</div>
+                        	<div class="col-4 col-12-medium">
+                            	<span class = "image"><img src="images/wave_spectrum.gif" alt="" class="ColeImage"/></span>
+								<p class = "special">Update Ocean wave amplitudes</p>
+                        	</div>
+                            <div class="col-4 col-12-medium">
+                                <span class = "image"><img src="images/wave_heightmap.gif" alt="" class="ColeImage"/></span>
+                                <p class = "special">Use the FFT to extract the Ocean Heightmap</p>
+                            </div>
+                    	</div>
+					</div>
+					<header class="major">
+						<h3>Stage 1: Initialize</h3>
+					</header>
+					<p>As is the case with all simulations, the first step is to initialize. For the ocean simulation, the only data which must be initialized is the initial ocean grid, h<sub>0</sub>. Each grid cell must be assigned an initial frequency, a process which takes O(WH) time. This task is embarrassingly parallel; each cell only requires a 2D Gaussian random number and a few simulation parameters such as windspeed, wind direction, and gravity. Due to its reliance on random numbers, which are difficult to calculate on the GPU, this stage is completed on the host serially. It is also worth mentioning that h<sub>0</sub> is a Hermitian function, a property which will prove useful in future steps.
+						Once completed, h<sub>0</sub> is transferred to the GPU, where the remainder of the simulation is completed.</p>
+					<header class="major">
+						<h3>Stage 2: Update Ocean Frequencies</h3>
+					</header>
+					<p>For every simulation timestep, we must calculate how the ocean waves move. This is accomplished by calculating the dispersion of energy between grid cells; some energy flows outwards to adjacent cells and some flows inwards from neighboring cells. Given a grid coordinate k&#8407;=(x,y) and simulation time t, the energy in the grid cell is:</p>
+					<img src="images/Ocean_Update_eq.png" alt="" class="ColeImage"/>
+					<p>This formula only requires grid cells from the initial heightmap, which makes the computation embarrassingly parallel. The value of h<sub>0</sub><sup>*</sup>, the conjugate wave heightfield, can be obtained from h<sub>0</sub> using properties of Hermitian functions.</p>
+					<p>In addition to calculating the wave's vertical height, there are several optional values we calculate to improve the simulation's fidelity. h(k&#8407;,t) only models the wave's vertical displacement, but it is also possible to model the wave's horizontal displacements using the choppy wave equations, C<sub>x</sub> and C<sub>y</sub>:</p>
+					<img src="images/Ocean_Choppy_eq.png" alt="" class="ColeImage"/>
+					<p>Each choppy wave equation will require a separate ocean grid to record the displacement for C<sub>x</sub> and C<sub>y</sub> respectively. As a result, there are actually 3 separate ocean grids which require updating in stages 2 & 3.</p>
+					<header class="major">
+						<h3>Stage 3: Create Heightmap</h3>
+					</header>
+					<p>The final phase of the simulation algorithm is to transform the grid cell values calculated in stage 2 to the time domain. This is accomplished using a 2D Inverse Fourier Transform (IFT). This algorithm has a computational complexity of O(W<sup>2</sup> * H<sup>2</sup>). This complexity is far too expensive, even when executed on the GPU in parallel, so we make a number of optimizations to reduce the complexity. Firstly, we use the dimensionality property of Fourier Transforms to decompose the 2D IFT into series of 1D IFTs. Instead of performing the 2D IFT, we first perform the 1D IFT along all the columns, then perform it along all the transformed rows. Doing so reduces the computational complexity to O(W*H<sup>2</sup> + H*W<sup>2</sup>). Parallelizing the 2D FFT now simply requires parallelizing the 1D FFT. For details on how this was accomplished, please see my full report included with the project code.</p>
+					<header class="major">
+						<h3>Results: Performance</h3>
+					</header>
+					<p>The average time elapsed for a completing Stages 2 & 3 of the simulation on various square grid sizes are shown below. The parallel CUDA implementation was run on an NVidia GTX 1080 GPU and the serial version was run on both an Intel i3 & Intel i7-8750H processors. In total, the parallel version is approximately 1300 times faster than the i3 and 300 times faster than the i7.</p>
+					<img src="images/Ocean_Perf.png" alt="" class="ColeImage"/>
+					<header class="major">
+						<h3>Results: Visualization</h3>
+					</header>
+					<p>To visualize the Ocean simulation, I created an OpenGL application which uses instanced rendering and a tesselation shader to generate a large Ocean mesh. For real time parameter tuning, I used the <a href="https://github.com/ocornut/imgui">Dear ImGui Library</a> to create a simple gui. All the parameters are described in <i>Empirical Directional Wave Spectra for Computer Graphics</i> by Christopher Horvath.</p>
+					<img src="images/ocean_anim.gif" alt="" class="ColeImage"/>
+					<p>For lighting & shading, we also need a normal map to describe the normal vector at each grid location. The normal map can computed by dispersing enegry along the partial derivatives of the ocean grid w.r.t the x, y, and z directions. This in turn requires updating & performing the 2D FFT for 3 additional grids.</p>
+					<div class="contain">
+						<div class="row gtr-150">
+                        	<div class="col-6 col-12-medium">
+                            	<span class = "image"><img src="images/wave_heightmap.gif" alt="" class="ColeImage"/></span>
+								<p class = "special">Ocean Height map (for vertex displacement)</p>
+                        	</div>
+                        	<div class="col-6 col-12-medium">
+                            	<img src="images/wave_normalmap.gif" alt="" class="ColeImage"/>
+								<p class = "special">Ocean Normal map (for vertex lighting)</p>
+                        	</div>
+                    	</div>
+					</div>
+					<p>Currently, the biggest limitation with this visualization is the fact that fetching the ocean heightmaps from the CUDA context and transferring them to the OpenGL context for visualization wastes a lot of time. A better visualization would rewrite all the CUDA simulation code as GLSL compute shaders, so the heightmap textures would already be available for rendering. I plan to make this improvement when I finish setting up the compute stages in my Vulkan Real-time Renderer.</p>
+					<div class="container">
+						<header class="major special">
+							<h3>Code</h3>
+						</header>
+						<p>The project source code and report can be found on my personal GitHub repository <a href="https://github.com/cadavidson98/Ocean-Simulation">here</a></p>
+					</div>
+					<div class="container">
+						<header class="major special">
+							<h3>References</h3>
+						</header>
+						<p>[1] Tessendorf, J. 2001. Simulating Ocean Water. SIG-GRAPH (1999), Course Notes.</p>
+						<p>[2] Gamper, T. 2018. Ocean Surface Generation and Rendering. Master's Thesis. Vienna University of Technology, the Faculty of Informatics.</p>
+						<p>[3] Sean Palmer, Jonathan Garcia, Sara Drakeley, Patrick Kelly, and Ralf Habel. 2017. The ocean and water pipeline of Disney's Moana. In ACM SIGGRAPH 2017 Talks (SIGGRAPH '17). Association for Computing Machinery, New York, NY, USA, Article 29, 1-2. https://doi.org/10.1145/3084363.3085067</p>
+						<p>[4] Christopher J. Horvath. 2015. Empirical directional wave spectra for computer graphics. In Proceedings of the 2015 Symposium on Digital Production (DigiPro '15). Association for Computing Machinery, New York, NY, USA, 29-39. https://doi.org/10.1145/2791261.2791267</p>
+					</div>
+				</div>
+			</section>
+
+			<!-- Footer -->
+			<section id="footer">
+				<ul class="icons">
+					<li><a href="www.linkedin.com/in/cole-davidson-163a97186" class="icon brands alt fa-linkedin"><span class="label">LinkedIn</span></a></li>
+					<li><a href="https://github.com/cadavidson98" class="icon brands alt fa-github"><span class="label">GitHub</span></a></li>
+					<li><a href="mailto:cadavidson98@gmail.com" class="icon solid alt fa-envelope"><span class="label">Email</span></a></li>
+				</ul>
+			</section>
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/jquery.scrolly.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+
+	</body>
+</html>
